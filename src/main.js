@@ -49,20 +49,20 @@ const world = {
   events: {
     gunshot(pos) { world.peds.panic(pos); },
   },
-  onWasted() {
+  onDeath() {
     if (world.state !== 'play') return;
     world.state = 'dead';
     world.stats.deaths++;
-    world.hud.banner('wasted', 'WASTED', `-${Math.round(CONFIG.DEATH_TAX * 100)}% cash`);
-    world.audio.wasted();
+    world.hud.banner('down', 'FLATLINED', `-${Math.round(CONFIG.DEATH_TAX * 100)}% cash`);
+    world.audio.death();
     world.cash *= 1 - CONFIG.DEATH_TAX;
     setTimeout(() => respawn(), 3200);
   },
-  onBusted() {
+  onArrest() {
     if (world.state !== 'play') return;
     world.state = 'dead';
     world.stats.busts++;
-    world.hud.banner('busted', 'BUSTED', `-${Math.round(CONFIG.BUST_TAX * 100)}% cash`);
+    world.hud.banner('cuffed', 'CUFFED', `-${Math.round(CONFIG.BUST_TAX * 100)}% cash`);
     world.audio.fail();
     world.cash *= 1 - CONFIG.BUST_TAX;
     setTimeout(() => respawn(), 3200);

@@ -119,7 +119,7 @@ export class Police {
       }
     }
     this.bustT = buster ? this.bustT + dt : Math.max(0, this.bustT - dt * 2);
-    if (this.bustT >= cfg.BUST_TIME) w.onBusted();
+    if (this.bustT >= cfg.BUST_TIME) w.onArrest();
 
     // ---------- survival payout at 3★+ ----------
     if (stars >= 3) {

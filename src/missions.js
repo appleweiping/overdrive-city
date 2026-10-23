@@ -8,7 +8,7 @@ import { pick, irange, range } from './rng.js';
 const TYPES = {
   courier:  { name: 'COURIER',      color: 0xf2c230, blurb: 'Timed delivery' },
   multidrop:{ name: 'RUSH HOUR',    color: 0xf2953a, blurb: 'Multi-drop, any order' },
-  taxi:     { name: 'GYPSY CAB',    color: 0x30c8f2, blurb: 'Take a fare across town' },
+  taxi:     { name: 'ROGUE CAB',    color: 0x30c8f2, blurb: 'Take a fare across town' },
   ghost:    { name: 'GHOST RUN',    color: 0xb58af2, blurb: 'Deliver without heat' },
   boost:    { name: 'BOOST',        color: 0x7ef29a, blurb: 'Steal a marked car, deliver it clean' },
   getaway:  { name: 'GETAWAY',      color: 0xf25a5a, blurb: 'Start hot. Vanish.' },
@@ -125,14 +125,14 @@ export class Missions {
       w.hud.banner('passed', 'JOB DONE', `$${reward} banks when you lose the heat`);
     } else {
       w.addCash(reward);
-      w.hud.banner('passed', 'MISSION PASSED', `+$${reward}`);
+      w.hud.banner('passed', 'JOB DONE', `+$${reward}`);
     }
     w.audio.jingle();
   }
 
   fail(why) {
     this.cleanup();
-    this.world.hud.banner('failed', 'MISSION FAILED', why);
+    this.world.hud.banner('failed', 'JOB FAILED', why);
     this.world.audio.fail();
   }
 

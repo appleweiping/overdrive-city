@@ -54,7 +54,7 @@ export class Player {
     this.armor -= absorbed;
     this.hp -= amount - absorbed;
     this.world.hud.hurtFlash();
-    if (this.hp <= 0) this.world.onWasted(source);
+    if (this.hp <= 0) this.world.onDeath(source);
   }
 
   heal() { this.hp = this.world.cfg.PLAYER_HP; this.armor = 0; }
