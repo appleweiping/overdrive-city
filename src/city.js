@@ -182,22 +182,7 @@ export function generateCity(cfg) {
     lamps.push({ x: (x + 0.5) * TILE, z: (z + 0.5) * TILE });
   }
 
-  // ---- lit windows for night (a sprinkle of emissive quads) ----
-  const windows = [];
-  for (let i = 0; i < 900 && buildings.length; i++) {
-    const b = pick(rng, buildings);
-    const side = irange(rng, 0, 3); // 0:+x 1:-x 2:+z 3:-z
-    const u = (rng() - 0.5) * (side < 2 ? b.d : b.w) * 0.8;
-    const y = 2 + rng() * (b.h - 3);
-    if (y > b.h - 1) continue;
-    const eps = 0.12;
-    let x = b.x, z = b.z, ry = 0;
-    if (side === 0) { x += b.w / 2 + eps; z += u; ry = Math.PI / 2; }
-    if (side === 1) { x -= b.w / 2 + eps; z += u; ry = -Math.PI / 2; }
-    if (side === 2) { z += b.d / 2 + eps; x += u; ry = 0; }
-    if (side === 3) { z -= b.d / 2 + eps; x += u; ry = Math.PI; }
-    windows.push({ x, y, z, ry });
-  }
+  // (lit windows are drawn by the facade shader in citymesh.js)
 
   // ---- samplable tile lists + intersection graph ----
   const roadTiles = [], sidewalkTiles = [], lotTiles = [];
@@ -221,7 +206,7 @@ export function generateCity(cfg) {
   }));
 
   const city = {
-    N, TILE, tiles, lane, district, buildings, trees, lamps, windows,
+    N, TILE, tiles, lane, district, buildings, trees, lamps,
     roadTiles, sidewalkTiles, lotTiles, nodes, vRoads, hRoads,
     size: N * TILE,
 
