@@ -12,6 +12,7 @@ All values below are the shipped defaults.
 | `N` | 96 | city is N×N tiles → **768 × 768 m** |
 | `SEED` | 20260717 | city-generation seed — same seed, same city |
 | `DAY_LENGTH` | 480 s | one full day/night cycle |
+| `DAY_START` | 0.35 | clock at the start of a session (08:24) |
 
 The generator lays 2-tile-wide roads on jittered lines (5–8 tile gaps), marks
 every road-adjacent tile as sidewalk, and fills each block interior with
@@ -143,9 +144,17 @@ anywhere on the map.
 
 ## Performance budget
 
-- Static city ≈ **10 draw calls**: merged vertex-colored ground, one
+- Static city = **9 meshes**: merged vertex-colored ground, one
   `InstancedMesh` each for buildings, roofs, lamp poles, lamp heads, lamp
-  light pools, trunks, canopies, lane dashes.
+  light pools, trunks, canopies, lane dashes. That is 9 draw calls in the
+  main pass, plus 3 in the sun's shadow pass (buildings, lamp poles and
+  canopies cast shadows).
+- Particles: one 600-slot `Points` cloud, CPU-simulated, preallocated.
+- Tracers: 24 pooled lines. No allocation in the frame loop.
+- Simulation is a fixed 60 Hz accumulator — physics identical at any refresh
+  rate; rendering is uncapped.
+- All spatial queries are O(1) tile lookups or short DDA walks. No physics
+  engine, no navmesh, no pathfinding graph beyond the intersection list.
 
 ## Facades
 
@@ -162,9 +171,3 @@ and tiles the atlas so every building gets bays of about 3–4.5 m and floors of
 ground floor. At night a hash of (building, bay, floor) decides which windows
 are lit and whether they are warm or cool, so each tower has its own pattern
 and it stays stable from frame to frame.
-- Particles: one 600-slot `Points` cloud, CPU-simulated, preallocated.
-- Tracers: 24 pooled lines. No allocation in the frame loop.
-- Simulation is a fixed 60 Hz accumulator — physics identical at any refresh
-  rate; rendering is uncapped.
-- All spatial queries are O(1) tile lookups or short DDA walks. No physics
-  engine, no navmesh, no pathfinding graph beyond the intersection list.
