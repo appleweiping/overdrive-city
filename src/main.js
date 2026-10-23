@@ -97,6 +97,8 @@ scene.add(headL, headL.target, headR, headR.target);
 // ---------- title screen ----------
 const titleEl = document.getElementById('title');
 const best = Number(localStorage.getItem('oc_best') || 0);
+// phones and tablets: no keyboard, no pointer lock -- say so up front
+const touchOnly = matchMedia('(hover: none) and (pointer: coarse)').matches;
 titleEl.innerHTML = `
   <h1>OVERDRIVE<br>CITY</h1>
   <div class="sub">one city · five stars · zero rules</div>
@@ -106,6 +108,8 @@ titleEl.innerHTML = `
     <b>F</b> enter / steal car &nbsp; <b>Space</b> handbrake &nbsp; <b>Shift</b> sprint &nbsp;
     <b>1 2 3</b>/<b>Q</b> weapons &nbsp; <b>M</b> mute &nbsp; <b>Esc</b> pause
   </div>
+  ${touchOnly ? `<div class="touch">This game needs a keyboard and mouse. On a phone or tablet
+    the city will load, but there are no touch controls yet.</div>` : ''}
   ${best > 0 ? `<div class="best">Best run: $${Math.floor(best).toLocaleString('en-US')}</div>` : ''}
   <div class="foot">An original open-world homage. Not affiliated with any game publisher.
     · <a href="https://github.com/appleweiping/overdrive-city" target="_blank">source</a></div>`;
@@ -238,7 +242,7 @@ function frame(now) {
   const dt = Math.min(0.1, (now - last) / 1000);
   last = now;
   handleKeys();
-  if (world.state === 'play' || world.state === 'dead') {
+  if (!world.manualClock && (world.state === 'play' || world.state === 'dead')) {
     acc += dt;
     while (acc >= STEP) { update(STEP); acc -= STEP; }
   }
@@ -253,5 +257,12 @@ addEventListener('resize', () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 
-// expose for smoke tests (and the curious)
+// expose for smoke tests (and the curious). With manualClock set, the
+// real-time loop stops stepping the sim and a script can step it frame by
+// frame -- that is how the README GIF was recorded on a slow machine.
+world.manualClock = false;
+world.advance = (frames, beforeStep) => {
+  for (let i = 0; i < frames; i++) { beforeStep?.(); update(STEP); }
+  world.input.consume();
+};
 window.__oc = world;
