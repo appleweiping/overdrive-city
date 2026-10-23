@@ -1,6 +1,6 @@
 # Overdrive City
 
-A 3D open-world driving game that runs in the browser: take any car in a procedurally generated city, pick up jobs, and shake off the police, from noon to midnight.
+A 3D open-world driving game that runs in the browser: take any car in a procedurally generated city, pick up jobs, and shake off the police through a full day-night cycle.
 
 **Play it: <https://appleweiping.github.io/overdrive-city/>** (desktop browser, keyboard and mouse)
 
@@ -53,11 +53,13 @@ on a phone the title screen explains that you need a keyboard and mouse.
 ## What you do
 
 Coloured beacons around the map offer ten kinds of generated jobs: timed
-deliveries, multi-stop runs, taxi fares (ROGUE CAB), checkpoint races, drift
-contracts, delivering a stolen car undamaged, a getaway that starts with the
-police already on you, holding a street corner against waves of armed gang
-members, and a guarded bounty. Rewards scale with distance, how wanted you are
-and the time of day.
+deliveries, multi-stop runs, taxi fares (ROGUE CAB), a quiet delivery that pays
+double if you never pick up a wanted star and fails at three (GHOST RUN),
+checkpoint races, drift contracts, delivering a stolen car undamaged, a getaway
+that starts with the police already on you, holding a street corner against
+waves of armed gang members, and a guarded bounty. Rewards scale with distance,
+how wanted you are and the time of day. The clock starts at 08:24 and runs a
+full day every eight minutes.
 
 Crimes build heat, and every 20 heat adds a wanted star (up to five). Officers
 arrive on foot, then in cruisers, and from three stars the cruisers ram you.
