@@ -84,8 +84,8 @@ frames. Decay only begins after **4 s outside every cop's line of sight**
 Response budget by stars: foot officers `[2,3,4,4,5]`, cruisers `[0,1,2,3,4]`.
 Below 3★ cruisers pull up near you and drop an officer; from 3★ they **ram**
 at full throttle. Standing still (or stopped in a car) for **1.6 s** with an
-officer within 3.4 m and eye contact = **BUSTED** (−20% cash). Death = −30%
-cash. Surviving at 3★+ pays **$100 per 30 s** — chaos is a valid career.
+officer within 3.4 m and eye contact gets you **cuffed** (−20% cash). Death
+(**flatlined**) costs 30%. Surviving at 3★+ pays **$100 per 30 s** — chaos is a valid career.
 
 When heat returns to zero all units stand down and leave; wrecks remain.
 
@@ -116,7 +116,7 @@ cash and pay out when heat hits zero.
 |---|---|---|---|
 | COURIER | timed delivery | 70 + 0.5/m | no |
 | RUSH HOUR | 3–5 drops, any order | 65/drop + 0.35/m | no |
-| GYPSY CAB | fare across town, stop to drop | (60 + 0.4/m) × tip(time) | no |
+| ROGUE CAB | fare across town, stop to drop | (60 + 0.4/m) × tip(time) | no |
 | GHOST RUN | deliver at 0★ (soft-fail per star) | (110 + 0.45/m) × [2 / 1 / 0.5] | no |
 | BOOST | steal marked car, deliver clean | (240 + 0.3/m) × condition% | yes |
 | GETAWAY | spawn at 2–4★, evade, reach safehouse | 150 · stars^1.5 + 0.2/m | no |
@@ -134,17 +134,34 @@ resets 2 s after the last drift or on any collision.
 
 Time-of-day lerps through 9 keyframes (midnight → dawn → noon → golden hour →
 dusk → night) driving sky, fog color/distance, sun color/intensity and
-hemisphere fill. The `nightFactor` ramp toggles: 900 pre-placed emissive
-window quads, lamp heads, every awake vehicle's head/tail lights, and two real
-spotlights on the player's car. The sun (one shadow-casting directional
+hemisphere fill. The `nightFactor` ramp lights a random share of the facade
+windows (in the building shader), fades in the lamp heads and their light
+pools on the pavement, and turns on every awake vehicle's head/tail lights and
+two real spotlights on the player's car. The sun (one shadow-casting directional
 light) orbits the player with a 140 m shadow box so shadows stay crisp
 anywhere on the map.
 
 ## Performance budget
 
 - Static city ≈ **10 draw calls**: merged vertex-colored ground, one
-  `InstancedMesh` each for buildings, roofs, windows, lamp poles, lamp heads,
-  trunks, canopies, lane dashes.
+  `InstancedMesh` each for buildings, roofs, lamp poles, lamp heads, lamp
+  light pools, trunks, canopies, lane dashes.
+
+## Facades
+
+Buildings are unit boxes scaled per instance, so a normal UV map would stretch
+one window across a whole tower. Instead `citymesh.js` draws a 640×128 canvas
+atlas once at startup: five 128 px window "bays" (downtown curtain wall,
+midtown office, residential, industrial, ground-floor shopfront). The red
+channel is wall shading, green marks glass, blue is a sky-reflection ramp.
+
+A patched `MeshLambertMaterial` (`onBeforeCompile`) works out which face it is
+on from the box normal, measures the face in meters from the instance matrix,
+and tiles the atlas so every building gets bays of about 3–4.5 m and floors of
+3–4.4 m depending on its district. Downtown and midtown get shopfronts on the
+ground floor. At night a hash of (building, bay, floor) decides which windows
+are lit and whether they are warm or cool, so each tower has its own pattern
+and it stays stable from frame to frame.
 - Particles: one 600-slot `Points` cloud, CPU-simulated, preallocated.
 - Tracers: 24 pooled lines. No allocation in the frame loop.
 - Simulation is a fixed 60 Hz accumulator — physics identical at any refresh
