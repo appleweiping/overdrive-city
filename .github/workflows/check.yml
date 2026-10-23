@@ -1,0 +1,23 @@
+name: check
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # Parse each file as an ES module. A plain `node --check src/x.js`
+      # lets a file with a syntax error through when it also has imports.
+      - name: Syntax check
+        run: |
+          for f in src/*.js; do
+            node --input-type=module --check < "$f" || { echo "::error file=$f::syntax error"; exit 1; }
+          done
+      - name: Tests
+        run: node --test test/city.test.mjs

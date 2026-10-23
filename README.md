@@ -30,6 +30,10 @@ python -m http.server 8000
 There is nothing to install and nothing to build. Any WebGL2 browser works;
 on a phone the title screen explains that you need a keyboard and mouse.
 
+With Node 22 or newer, `node --test test/city.test.mjs` checks without a
+browser that every module loads and that the seed still builds the same
+connected city. CI runs it on every push.
+
 ## Controls
 
 | On foot | |
@@ -113,6 +117,7 @@ src/peds.js           civilians, police and gang members
 src/police.js         heat, stars, line-of-sight decay, escalation, arrests
 src/missions.js       the job framework and the ten job types
 src/player.js, weapons.js, effects.js, audio.js, hud.js, minimap.js, input.js, main.js
+test/city.test.mjs    module loading and city generation checks for Node
 ```
 
 ## License
