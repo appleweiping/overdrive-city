@@ -172,7 +172,7 @@ function handleKeys() {
 }
 
 // ---------- simulation step ----------
-let lightT = 0;
+let lightT = 0, lightsOn = false;
 function update(dt) {
   const w = world;
 
@@ -195,23 +195,26 @@ function update(dt) {
     lightT = 0.5;
     const nf = w.daynight.nightFactor;
     cityMesh.setNight(nf);
-    const lightsOn = nf > 0.35;
+    lightsOn = nf > 0.35;
     for (const v of w.allVehicles())
       if (!v.wrecked && (v.driver || !v.asleep)) v.setHeadlights(lightsOn);
-    const pv = w.player.vehicle;
-    headL.intensity = headR.intensity = (lightsOn && pv && !pv.wrecked) ? 110 : 0;
-    if (pv) {
-      const [fx, fz] = pv.fwd;
-      const rx = -fz, rz = fx;
-      headL.position.set(pv.pos.x + fx * 2 + rx * 0.6, 0.8, pv.pos.z + fz * 2 + rz * 0.6);
-      headR.position.set(pv.pos.x + fx * 2 - rx * 0.6, 0.8, pv.pos.z + fz * 2 - rz * 0.6);
-      headL.target.position.set(pv.pos.x + fx * 30 + rx * 0.6, 0.2, pv.pos.z + fz * 30 + rz * 0.6);
-      headR.target.position.set(pv.pos.x + fx * 30 - rx * 0.6, 0.2, pv.pos.z + fz * 30 - rz * 0.6);
-    }
+  }
+
+  // the player's two spotlights follow the car every step: at 2 Hz they
+  // trailed up to 6 m behind at city speeds and lit the rear bumper
+  const pv = w.player.vehicle;
+  const beams = lightsOn && pv && !pv.wrecked;
+  headL.intensity = headR.intensity = beams ? 110 : 0;
+  if (beams) {
+    const [fx, fz] = pv.fwd;
+    const rx = -fz, rz = fx;
+    headL.position.set(pv.pos.x + fx * 2 + rx * 0.6, 0.8, pv.pos.z + fz * 2 + rz * 0.6);
+    headR.position.set(pv.pos.x + fx * 2 - rx * 0.6, 0.8, pv.pos.z + fz * 2 - rz * 0.6);
+    headL.target.position.set(pv.pos.x + fx * 30 + rx * 0.6, 0.2, pv.pos.z + fz * 30 + rz * 0.6);
+    headR.target.position.set(pv.pos.x + fx * 30 - rx * 0.6, 0.2, pv.pos.z + fz * 30 - rz * 0.6);
   }
 
   // engine audio
-  const pv = w.player.vehicle;
   w.audio.engine(pv ? Math.min(1, pv.speed / pv.spec.maxF) : 0,
     pv ? pv.controls.throttle !== 0 : false, !!pv);
 
